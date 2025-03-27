@@ -1,0 +1,12 @@
+[project]
+name = "arcabot_Streamlit"
+version = "0.1"
+dependencies = [
+   "PyJWT==2.10.1",
+   "redis==5.2.1",
+   "requests==2.32.3",
+   "streamlit==1.44.0",
+]
+
+[project.optional-dependencies]
+dev = ["black", "flake8"]

@@ -1,0 +1,22 @@
+services:
+  arcabot_fastapi:
+    build:
+      context: arcabot_fastapi
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./arcabot_fastapi/src:/usr/src/app
+
+  arcabot_streamlit:
+    build:
+      context: arcabot_streamlit
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8501:8501'
+    volumes:
+      - ./arcabot_streamlit/src:/usr/src/app
