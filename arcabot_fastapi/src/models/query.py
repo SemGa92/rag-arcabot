@@ -1,0 +1,15 @@
+from pydantic import BaseModel
+from models import SoftwareEnum
+
+
+
+class PDFQueryInput(BaseModel):
+    """Input Query Pydantic Model"""
+    text: str
+    software: SoftwareEnum
+
+
+class PDFQueryOutput(BaseModel):
+    """Output Query Pydantic Model"""
+    query: str
+    result: str
