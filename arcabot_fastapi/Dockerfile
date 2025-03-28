@@ -26,6 +26,9 @@ COPY --from=builder --chown=arcabot /root/.local /home/arcabot/.local
 
 ENV PATH=/home/arcabot/.local/bin:$PATH
 
+WORKDIR /opt/chroma_data
+COPY chroma_data .
+
 WORKDIR /usr/src/app
 COPY src .
 

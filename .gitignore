@@ -2,3 +2,6 @@
 **/venv
 **/build
 **/**.egg-info
+
+arcabot_fastapi/chroma_data
+!arcabot_fastapi/chroma_data/.gitkeep
