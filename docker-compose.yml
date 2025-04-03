@@ -1,21 +1,8 @@
 services:
-  arcabot_chromadb:
-    build:
-      context: arcabot_chromadb
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    volumes:
-      - ./arcabot_chromadb/src:/usr/src/app
-      - ./arcabot_chromadb/documents:/usr/src/app/documents
-      - ./arcabot_fastapi/chroma_data:/opt/chroma_data
-
   arcabot_fastapi:
     build:
       context: arcabot_fastapi
       dockerfile: Dockerfile
-    depends_on:
-      - arcabot_chromadb
     env_file:
       - .env
     ports:

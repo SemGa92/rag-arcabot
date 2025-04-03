@@ -1,10 +1,21 @@
-from fastapi import FastAPI, Depends
+import os
+import aiofiles
+import openai
 
-from chains.talentum_pdfquery_chain import PDFQueryChainTalentum
-from chains.jobarch_pdfquery_chain import PDFQueryChainJobArch
-from chains.ngage_pdfquery_chain import PDFQueryChainNgage
-from chains.jobcourier_pdfquery_chain import PDFQueryChainJobCourier
+from fastapi import (
+    FastAPI,
+    Depends,
+    File,
+    Form,
+    UploadFile,
+    HTTPException,
+    )
 
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+
+from chains.generic_pdfquery_chain import PDFQueryChainGeneric
 from models.query import PDFQueryInput, PDFQueryOutput
 
 from utils.auth_utils import my_auth
@@ -18,23 +29,16 @@ app = FastAPI(
 )
 
 
-CHAIN_SELECTOR = {
-    'Talentum': PDFQueryChainTalentum(),
-    'JobArch': PDFQueryChainJobArch(),
-    'Ngage': PDFQueryChainNgage(),
-    'JobCourier': PDFQueryChainJobCourier(),
-}
 
-
-@async_retry(max_retries=10, delay=1)
-async def invoke_agent_with_retry(query: str, software: str) -> dict:
+@async_retry(max_retries=1, delay=1)
+async def invoke_agent_with_retry(query: PDFQueryInput) -> dict:
     """
     Retry the agent if a tool fails to run.
     This can help when there are intermittent connection issues
     to external APIs.
     """
-    my_chain = await CHAIN_SELECTOR.get(software).get_pdfquery_vector_chain()
-    return await my_chain.ainvoke({"query": query})
+    my_chain = await PDFQueryChainGeneric(query.openai_token, query.software.value).get_pdfquery_vector_chain()
+    return await my_chain.ainvoke({"query": query.text})
 
 
 @app.get("/")
@@ -49,5 +53,41 @@ async def pdfquery_agent(
     auth=Depends(my_auth)
 ) -> PDFQueryOutput:
     """Invoke the agent with the input query."""
-    query_response = await invoke_agent_with_retry(query.text, query.software)
+    query_response = await invoke_agent_with_retry(query)
     return query_response
+
+
+@app.post("/update-db")
+async def upload_file(
+    file: UploadFile = File(...),
+    software: str = Form(...),
+    openai_token: str = Form(...),
+    auth=Depends(my_auth)
+) -> dict:
+
+    upload_dir = '/tmp/uploads'
+    os.makedirs(upload_dir, exist_ok=True)
+
+    content = await file.read()
+    async with aiofiles.open(f"{upload_dir}/{file.filename}", "wb") as f:
+        await f.write(content)
+
+    loader = PyPDFLoader(f"{upload_dir}/{file.filename}")
+    pages = loader.load_and_split()
+
+    embedding = OpenAIEmbeddings(openai_api_key=openai_token)
+
+    try:
+        _ = Chroma.from_documents(
+            pages,
+            embedding,
+            collection_name=software,
+            persist_directory='chroma_data',
+            )
+    except openai.AuthenticationError as e:
+        raise HTTPException(
+            status_code=e.status_code,
+            detail=e.message,
+            )
+
+    return {"message": "DB updated successfully"}

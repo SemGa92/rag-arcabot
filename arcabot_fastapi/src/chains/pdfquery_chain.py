@@ -17,9 +17,7 @@ from langchain.prompts import (
     ChatPromptTemplate,
     )
 
-
 CHROMA_PATH = os.getenv('CHROMA_PATH', '')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 
 
 
@@ -28,10 +26,10 @@ class PDFQueryChain:
 
     _executor = ThreadPoolExecutor()
 
-    def __init__(self, collection: str, template: str):
+    def __init__(self, openai_token: str, collection: str, template: str):
+        self._openai_token = openai_token
         self._collection = collection
         self._template = template
-
 
     def _get_chroma_db(self) -> Chroma:
         """
@@ -42,7 +40,7 @@ class PDFQueryChain:
             collection_name=self._collection,
             persist_directory=CHROMA_PATH,
             embedding_function=OpenAIEmbeddings(
-                openai_api_key=OPENAI_API_KEY
+                openai_api_key=self._openai_token
                 )
         )
 
@@ -92,6 +90,7 @@ class PDFQueryChain:
         """Init RetrievalQA."""
         return RetrievalQA.from_chain_type(
             llm=ChatOpenAI(
+                openai_api_key=self._openai_token,
                 model="gpt-4o",
                 temperature=0,
                 streaming=True,

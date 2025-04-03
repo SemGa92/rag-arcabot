@@ -7,6 +7,7 @@ class PDFQueryInput(BaseModel):
     """Input Query Pydantic Model"""
     text: str
     software: SoftwareEnum
+    openai_token: str
 
 
 class PDFQueryOutput(BaseModel):

@@ -18,6 +18,7 @@ EXPOSE 8000
 RUN apt-get update \
     && apt-get install -y \
         nano \
+        poppler-utils \
     && apt-get clean
 
 RUN useradd --create-home --shell /bin/bash arcabot
