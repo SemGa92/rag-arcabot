@@ -3,5 +3,6 @@
 **/build
 **/**.egg-info
 
-arcabot_fastapi/chroma_data
-!arcabot_fastapi/chroma_data/.gitkeep
+
+arcabot_fastapi/src/chroma_data
+!arcabot_fastapi/src/chroma_data/.gitkeep
