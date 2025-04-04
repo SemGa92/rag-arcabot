@@ -63,6 +63,7 @@ def process_file_upload(key: str, uploaded_file: UploadedFile) -> None:
 
         if st.session_state[key]["output"] and not st.session_state[key]["error"]:
             st.success(st.session_state[key]["output"]['message'])
+            st.session_state['uid_chroma_collection'] = st.session_state[key]["output"]['uid']
 
             if st.session_state[key]["preview"] is None:
                 file_bytes = uploaded_file.read()

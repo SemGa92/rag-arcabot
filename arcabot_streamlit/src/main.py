@@ -14,5 +14,8 @@ st.set_page_config(
 get_sidebar()
 get_intro()
 
+if 'uid' in st.session_state:
+    st.write(st.session_state['uid'])
+
 if 'openai_token' in st.session_state:
     get_chat()

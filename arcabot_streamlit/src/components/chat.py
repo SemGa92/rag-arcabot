@@ -30,6 +30,7 @@ def get_chat():
                 'software': software,
                 'openai_token': st.session_state['openai_token'],
                 'custom_prompt': st.session_state['custom_prompt'],
+                'uid_chroma_collection': st.session_state['uid_chroma_collection']
                 }
             output_text, error = chat_request(data)
 

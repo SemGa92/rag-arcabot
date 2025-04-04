@@ -1,6 +1,7 @@
 import os
 import aiofiles
 import openai
+import uuid
 
 from fastapi import (
     FastAPI,
@@ -60,7 +61,6 @@ async def pdfquery_agent(
 @app.post("/update-db")
 async def upload_file(
     file: UploadFile = File(...),
-    software: str = Form(...),
     openai_token: str = Form(...),
     auth=Depends(my_auth)
 ) -> dict:
@@ -68,11 +68,15 @@ async def upload_file(
     upload_dir = '/tmp/uploads'
     os.makedirs(upload_dir, exist_ok=True)
 
+    uid = str(uuid.uuid4())
+    upload_dir_uid = f'{upload_dir}/{uid}'
+    os.makedirs(upload_dir_uid)
+
     content = await file.read()
-    async with aiofiles.open(f"{upload_dir}/{file.filename}", "wb") as f:
+    async with aiofiles.open(f"{upload_dir_uid}/{file.filename}", "wb") as f:
         await f.write(content)
 
-    loader = PyPDFLoader(f"{upload_dir}/{file.filename}")
+    loader = PyPDFLoader(f"{upload_dir_uid}/{file.filename}")
     pages = loader.load_and_split()
 
     embedding = OpenAIEmbeddings(openai_api_key=openai_token)
@@ -81,8 +85,8 @@ async def upload_file(
         _ = Chroma.from_documents(
             pages,
             embedding,
-            collection_name=software,
-            persist_directory='chroma_data',
+            collection_name=uid,
+            persist_directory=os.getenv('CHROMA_PATH', ''),
             )
     except openai.AuthenticationError as e:
         raise HTTPException(
@@ -90,4 +94,7 @@ async def upload_file(
             detail=e.message,
             )
 
-    return {"message": "DB updated successfully"}
+    return {
+        "message": "DB updated successfully",
+        "uid": uid
+        }

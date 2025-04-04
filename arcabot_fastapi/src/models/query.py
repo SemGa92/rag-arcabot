@@ -9,6 +9,7 @@ class PDFQueryInput(BaseModel):
     software: SoftwareEnum
     openai_token: str
     custom_prompt: str
+    uid_chroma_collection: str
 
 
 class PDFQueryOutput(BaseModel):
