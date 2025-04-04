@@ -15,7 +15,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 
-from chains.generic_pdfquery_chain import PDFQueryChainGeneric
+from chains.custom_pdfquery_chain import PDFQueryChainCustom
 from models.query import PDFQueryInput, PDFQueryOutput
 
 from utils.auth_utils import my_auth
@@ -37,7 +37,7 @@ async def invoke_agent_with_retry(query: PDFQueryInput) -> dict:
     This can help when there are intermittent connection issues
     to external APIs.
     """
-    my_chain = await PDFQueryChainGeneric(query.openai_token, query.software.value).get_pdfquery_vector_chain()
+    my_chain = await PDFQueryChainCustom(query).get_pdfquery_vector_chain()
     return await my_chain.ainvoke({"query": query.text})
 
 

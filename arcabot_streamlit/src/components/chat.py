@@ -28,7 +28,8 @@ def get_chat():
             data = {
                 'text': prompt,
                 'software': software,
-                'openai_token': st.session_state['openai_token']
+                'openai_token': st.session_state['openai_token'],
+                'custom_prompt': st.session_state['custom_prompt'],
                 }
             output_text, error = chat_request(data)
 

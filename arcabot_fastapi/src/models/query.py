@@ -8,6 +8,7 @@ class PDFQueryInput(BaseModel):
     text: str
     software: SoftwareEnum
     openai_token: str
+    custom_prompt: str
 
 
 class PDFQueryOutput(BaseModel):
