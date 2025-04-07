@@ -7,7 +7,7 @@ from pdf2image import convert_from_bytes
 
 
 
-CHATBOT_HOST = os.getenv('CHATBOT_HOST', '')
+CHATBOT_URL = os.getenv('CHATBOT_URL', '')
 
 
 def _get_token_api() -> str:
@@ -41,7 +41,7 @@ def get_pdf_preview(pdf_content: bytes):
 
 def chat_request(data: dict) -> tuple[str, bool]:
     response = requests.post(
-        f'{CHATBOT_HOST}/arcabot',
+        f'{CHATBOT_URL}/arcabot',
         json=data,
         headers=get_headers(),
         verify=False
@@ -63,7 +63,7 @@ def file_request(uploaded_file, software: str, openai_token: str) -> tuple[str, 
     files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
 
     response = requests.post(
-        f'{CHATBOT_HOST}/update-db',
+        f'{CHATBOT_URL}/update-db',
         files=files,
         headers=get_headers(file=True),
         data={'software': software, 'openai_token': openai_token,},
