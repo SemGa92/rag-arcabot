@@ -7,7 +7,8 @@ from utils.functions import file_request, get_pdf_preview
 def select_software() -> None:
     software = st.selectbox(
         "Which software do you want to query?",
-        ("Talentum", "Ngage", "JobArch", "JobCourier"),
+        ("Talentum",),
+        #("Talentum", "Ngage", "JobArch", "JobCourier"),
     )
     st.session_state['software'] = software
 
