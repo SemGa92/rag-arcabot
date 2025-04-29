@@ -104,3 +104,9 @@ streamlit run main.py
 - **Port Conflicts**: Ensure ports `8000` and `8501` are not in use by other applications.
 - **Environment Variables**: Verify that the `.env` file is correctly configured.
 - **Docker Issues**: Run `docker system prune` to clean up unused Docker resources if you encounter build issues.
+
+---
+
+## References
+
+- [Build an LLM RAG Chatbot With LangChain](https://realpython.com/build-llm-rag-chatbot-with-langchain/#step-2-understand-the-business-requirements-and-data)
